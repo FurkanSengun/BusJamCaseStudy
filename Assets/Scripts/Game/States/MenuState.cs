@@ -1,24 +1,35 @@
+using System.Threading.Tasks;
 using Core.SceneManagement;
 using Core.UI;
 using Game.GameManager;
-using UnityEngine;
-using Zenject;
 
 namespace Game.States
 {
     public class MenuState : GameState
     {
-        [Inject] private IUIManager _uiManager;
-        [Inject] private ISceneManager _sceneManager;
-        
-        public MenuState(IGameManager gm) : base(gm) { }
+        private readonly IUIManager _uiManager;
+        private readonly ISceneManager _sceneManager;
+
+        public MenuState(IGameManager gm, IUIManager uiManager, ISceneManager sceneManager) : base(gm)
+        {
+            _uiManager = uiManager;
+            _sceneManager = sceneManager;
+        }
 
         public override void Enter()
         {
-            Debug.Log(_uiManager.GetType());
-            //_uiManager.HideAllSceneUI();
-            //_sceneManager.LoadSceneAsync(SceneNames.MenuScene);
-            
+            _sceneManager.OnSceneLoaded -= HandleSceneLoaded;
+            _sceneManager.OnSceneLoaded += HandleSceneLoaded;
+
+            _ = EnterAsync();
+        }
+
+        private async Task EnterAsync()
+        {
+            _uiManager.HideAllSceneUI();
+            _uiManager.Show(UIType.Loading, true);
+
+            await _sceneManager.LoadSceneWithTransitionAsync(SceneNames.MenuScene);
         }
 
         public override void Tick()
@@ -27,12 +38,22 @@ namespace Game.States
 
         public override void Exit()
         {
+            _sceneManager.OnSceneLoaded -= HandleSceneLoaded;
+
             _uiManager.Hide(UIType.Menu);
+        }
+
+        private void HandleSceneLoaded(string sceneName)
+        {
+            if (sceneName != SceneNames.MenuScene) return;
+
+            _sceneManager.OnSceneLoaded -= HandleSceneLoaded;
+            OnMenuSceneLoaded();
         }
 
         private void OnMenuSceneLoaded()
         {
-            _uiManager.Show(UIType.Menu, true);
+            _uiManager.Show(UIType.Menu);
         }
     }
 }

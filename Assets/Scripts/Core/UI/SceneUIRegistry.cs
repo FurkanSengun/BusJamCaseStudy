@@ -7,24 +7,44 @@ namespace Core.UI
     {
         [SerializeField] private UIEntry[] _sceneEntries;
 
-        [Inject] private UIManager _uiManager;
+        [Inject] private IUIManager _uiManager;
 
-        private void OnEnable()
+        private bool _isRegistered;
+
+        private void Start()
         {
+            RegisterAll();
+        }
+
+        private void OnDisable()
+        {
+            UnregisterAll();
+        }
+
+        private void RegisterAll()
+        {
+            if (_uiManager == null || _isRegistered) return;
+
             foreach (var e in _sceneEntries)
             {
                 if (e.UICanvas == null) continue;
                 _uiManager.Register(e.UIType, e.UICanvas);
             }
+
+            _isRegistered = true;
         }
 
-        private void OnDisable()
+        private void UnregisterAll()
         {
+            if (_uiManager == null || !_isRegistered) return;
+
             foreach (var e in _sceneEntries)
             {
                 if (e.UICanvas == null) continue;
                 _uiManager.Unregister(e.UIType, e.UICanvas);
             }
+
+            _isRegistered = false;
         }
     }
 }

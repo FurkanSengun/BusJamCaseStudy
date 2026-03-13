@@ -9,5 +9,6 @@ namespace Core.UI
         void Show(UIType type, bool hideOthers = false);
         void Hide(UIType type);
         void HideAllSceneUI();
+        bool TryGet(UIType type, out GameObject canvas);
     }
 }

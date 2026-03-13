@@ -19,6 +19,11 @@ namespace Core.UI
             if (existing == canvas) _map.Remove(type);
         }
 
+        public bool TryGet(UIType type, out GameObject canvas)
+        {
+            return _map.TryGetValue(type, out canvas);
+        }
+
         private GameObject Get(UIType type)
         {
             return _map.GetValueOrDefault(type);
@@ -29,9 +34,7 @@ namespace Core.UI
             var target = Get(type);
 
             if (target == null)
-            {
                 return;
-            }
 
             if (hideOthers)
             {
@@ -55,8 +58,10 @@ namespace Core.UI
         public void HideAllSceneUI()
         {
             foreach (var kv in _map)
+            {
                 if (kv.Value != null)
                     kv.Value.SetActive(false);
+            }
         }
     }
 }
