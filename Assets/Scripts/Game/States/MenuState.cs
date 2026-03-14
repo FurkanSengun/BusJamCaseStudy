@@ -10,7 +10,7 @@ namespace Game.States
         private readonly IUIManager _uiManager;
         private readonly ISceneManager _sceneManager;
 
-        public MenuState(IGameManager gm, IUIManager uiManager, ISceneManager sceneManager) : base(gm)
+        public MenuState(IGameManager gameManager, IUIManager uiManager, ISceneManager sceneManager) : base(gameManager)
         {
             _uiManager = uiManager;
             _sceneManager = sceneManager;

@@ -1,6 +1,6 @@
 using System;
 
-namespace Game.Data
+namespace Game.Data.PlayerData
 {
     public interface IPlayerDataManager
     {

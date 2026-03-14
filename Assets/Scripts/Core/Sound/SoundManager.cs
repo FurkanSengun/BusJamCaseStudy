@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Game.Data;
+using Game.Data.PlayerData;
 using UnityEngine;
 using Zenject;
 
@@ -8,12 +8,12 @@ namespace Core.Sound
     [RequireComponent(typeof(AudioSource))]
     public class SoundManager : MonoBehaviour, ISoundManager
     {
+        [Header("References")] 
         [SerializeField] private AudioSource audioSource;
         [SerializeField] private SfxLibrary sfxLibrary;
         private readonly Dictionary<string, SfxEntry> _soundMap = new();
 
         [Inject] private IPlayerDataManager _playerDataManager;
-
 
         private void Awake()
         {
@@ -22,6 +22,7 @@ namespace Core.Sound
             ApplySoundState(_playerDataManager.IsSoundOn);
             _playerDataManager.OnSoundStateChanged += ApplySoundState;
         }
+
 
         private void OnDestroy()
         {

@@ -791,9 +791,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _sceneEntries:
-  - UIType: 2
-    UICanvas: {fileID: 339195380}
   - UIType: 1
+    UICanvas: {fileID: 339195380}
+  - UIType: 0
     UICanvas: {fileID: 1485788498}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

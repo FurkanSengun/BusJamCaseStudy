@@ -1,9 +1,8 @@
 using System;
 using Core.SaveSystem;
-using Game.Data;
 using UnityEngine;
 
-namespace Core.PlayerData
+namespace Game.Data.PlayerData
 {
     public class PlayerDataManager : IPlayerDataManager
     {
@@ -14,6 +13,7 @@ namespace Core.PlayerData
 
         public int CurrentLevel { get; private set; }
         public bool IsSoundOn { get; private set; }
+        public bool IsLoaded { get; private set; }
 
         public event Action<bool> OnSoundStateChanged;
 
@@ -24,8 +24,14 @@ namespace Core.PlayerData
 
         public void Load()
         {
+            if (IsLoaded)
+            {
+                return;
+            }
+
             CurrentLevel = _saveManager.Load(CurrentLevelKey, 0);
             IsSoundOn = _saveManager.Load(SoundKey, 1) == 1;
+            IsLoaded = true;
         }
 
         public void SetCurrentLevel(int level)

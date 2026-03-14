@@ -19,10 +19,7 @@ namespace Core.SceneManagement
 
         private bool _isTransitioning;
 
-        public async Task LoadSceneWithTransitionAsync(
-            string sceneName,
-            LoadSceneMode mode = LoadSceneMode.Single,
-            CancellationToken cancellationToken = default)
+        public async Task LoadSceneWithTransitionAsync( string sceneName, LoadSceneMode mode = LoadSceneMode.Single, CancellationToken cancellationToken = default)
         {
             if (_isTransitioning) return;
 
@@ -111,7 +108,6 @@ namespace Core.SceneManagement
 
             if (allowSceneActivation || asyncOperation.isDone)
             {
-                // SceneUIRegistry Start içinde register ettiği için bir frame bekliyoruz
                 await Task.Yield();
                 OnSceneLoaded?.Invoke(sceneName);
             }

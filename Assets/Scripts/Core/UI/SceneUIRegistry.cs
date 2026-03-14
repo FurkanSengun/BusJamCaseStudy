@@ -3,14 +3,18 @@ using Zenject;
 
 namespace Core.UI
 {
+    /// <summary>
+    /// Sahnede gereken UI Canvasları register/unregister eder ve UIManager'e gönderir
+    /// </summary>
     public class SceneUIRegistry : MonoBehaviour
     {
+        [Header("Scene UI Canvases")]
         [SerializeField] private UIEntry[] _sceneEntries;
 
         [Inject] private IUIManager _uiManager;
 
         private bool _isRegistered;
-
+        
         private void Start()
         {
             RegisterAll();
@@ -20,7 +24,7 @@ namespace Core.UI
         {
             UnregisterAll();
         }
-
+        
         private void RegisterAll()
         {
             if (_uiManager == null || _isRegistered) return;
@@ -33,7 +37,7 @@ namespace Core.UI
 
             _isRegistered = true;
         }
-
+        
         private void UnregisterAll()
         {
             if (_uiManager == null || !_isRegistered) return;

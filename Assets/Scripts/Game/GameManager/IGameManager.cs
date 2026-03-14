@@ -4,7 +4,13 @@ namespace Game.GameManager
 {
     public interface IGameManager
     {
-        public void Init();
-        public void ChangeState(IState newState);
+        IState CurrentState { get; }
+
+        void Init();
+        void ChangeState(IState newState);
+
+        void EnterMenu();
+        void StartGameplay();
+        void EnterLose();
     }
 }

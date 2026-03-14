@@ -1,7 +1,7 @@
 using Core.FSM;
 using Core.SceneManagement;
 using Core.UI;
-using Game.Data;
+using Game.Data.PlayerData;
 using Game.States;
 using UnityEngine;
 using Zenject;
@@ -19,7 +19,10 @@ namespace Game.GameManager
         public IState CurrentState => _stateMachine.CurrentState;
 
         [Inject]
-        public void Construct(IUIManager uiManager, ISceneManager sceneManager, IPlayerDataManager playerDataManager)
+        public void Construct(
+            IUIManager uiManager,
+            ISceneManager sceneManager,
+            IPlayerDataManager playerDataManager)
         {
             _uiManager = uiManager;
             _sceneManager = sceneManager;
@@ -38,14 +41,28 @@ namespace Game.GameManager
 
         public void Init()
         {
-            ChangeState(new MenuState(this, _uiManager, _sceneManager));
             _playerDataManager.Load();
-            
+            EnterMenu();
         }
 
         public void ChangeState(IState newState)
         {
             _stateMachine.ChangeState(newState);
+        }
+
+        public void EnterMenu()
+        {
+            ChangeState(new MenuState(this, _uiManager, _sceneManager));
+        }
+
+        public void StartGameplay()
+        {
+            ChangeState(new GameplayState(this, _uiManager, _sceneManager));
+        }
+
+        public void EnterLose()
+        {
+            ChangeState(new LoseState(this, _uiManager));
         }
     }
 }

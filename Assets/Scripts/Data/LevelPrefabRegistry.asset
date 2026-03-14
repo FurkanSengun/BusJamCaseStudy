@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3d39189b5434c8fbc2a3ca58f1aae7e, type: 3}
+  m_Name: LevelPrefabRegistry
+  m_EditorClassIdentifier: 
+  editorCellPrefab: {fileID: 5678152349788263513, guid: db7327fcaf8cb924280bbee03082d941,
+    type: 3}
+  editorQueueSlotPrefab: {fileID: 6286775943184120097, guid: 55bb1a5ca6801114aab16b3712245538,
+    type: 3}
+  groundCellPrefab: {fileID: 5678152349788263513, guid: db7327fcaf8cb924280bbee03082d941,
+    type: 3}
+  queueSlotPrefab: {fileID: 6286775943184120097, guid: 55bb1a5ca6801114aab16b3712245538,
+    type: 3}
+  obstaclePrefab: {fileID: 3383002118210680571, guid: 5267c5fa902833b45a3d20fb8e8e3ed6,
+    type: 3}
+  passengerPrefab: {fileID: 2115099470688211732, guid: 4af9cb4712ac9b545953a8596b39b8fd,
+    type: 3}
+  busPrefab: {fileID: 6286775943184120097, guid: 55bb1a5ca6801114aab16b3712245538,
+    type: 3}
