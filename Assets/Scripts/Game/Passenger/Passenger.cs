@@ -13,6 +13,9 @@ using Zenject;
 
 namespace Game.Passenger
 {
+    /// <summary>
+    /// Yolcuları init eder ve etkileşime girme durumunda hareket edebilme durumunu kontrol eder
+    /// </summary>
     public class Passenger : MonoBehaviour, IPassenger, IInteractable
     {
         [SerializeField] private PassengerMovementController mover;
@@ -281,6 +284,38 @@ namespace Game.Passenger
             }
 
             return true;
+        }
+        
+        public void RelocateToQueueSlot(QueueSlot slot, Action onComplete = null)
+        {
+            if (slot == null)
+            {
+                return;
+            }
+
+            IsReadyForBoarding = false;
+            _isBusy = true;
+
+            transform.SetParent(null, true);
+            visual?.PlayRunning();
+            RefreshInteractableVisual();
+
+            Action finalize = () =>
+            {
+                transform.position = slot.transform.position;
+                transform.SetParent(slot.transform, true);
+
+                IsInQueue = true;
+                IsReadyForBoarding = true;
+                _isBusy = false;
+
+                visual?.PlayIdle();
+                RefreshInteractableVisual();
+                _queueManager?.NotifyQueueChanged();
+                onComplete?.Invoke();
+            };
+
+            MoveDirect(slot.transform.position, finalize);
         }
     }
 }

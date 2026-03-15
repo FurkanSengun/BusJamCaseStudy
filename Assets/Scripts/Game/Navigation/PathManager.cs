@@ -5,6 +5,9 @@ using Zenject;
 
 namespace Game.Navigation
 {
+    /// <summary>
+    /// Yolcunun sıraya ya da otobüse ulaşabilmesi için alması gereken yolu hesaplar
+    /// </summary>
     public class PathManager : MonoBehaviour, IPathManager
     {
         private static readonly Vector2Int[] Directions =

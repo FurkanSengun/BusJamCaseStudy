@@ -7,6 +7,9 @@ using Zenject;
 
 namespace Game.Timer
 {
+    /// <summary>
+    ///     Level içerisindeki süreyi kontrol eder. Süreyi başlatma/durdurma ve ilk inputta başlamasını sağlamayı sağlar
+    /// </summary>
     public class TimeManager : MonoBehaviour, ITimeManager
     {
         private IInputManager _inputManager;
@@ -67,7 +70,7 @@ namespace Game.Timer
 
             _isArmed = false;
             IsRunning = true;
-            
+
             DevLog.Log("Starting timer");
             OnTimerStarted?.Invoke();
             _timerCoroutine = StartCoroutine(TimerRoutine());

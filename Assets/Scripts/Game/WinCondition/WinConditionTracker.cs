@@ -2,6 +2,9 @@ using System;
 
 namespace Game.WinCondition
 {
+    /// <summary>
+    ///     Kazanma durumlarını teyit eder ve event gönderir
+    /// </summary>
     public class WinConditionTracker : IWinConditionTracker
     {
         public event Action OnLevelCompleted;

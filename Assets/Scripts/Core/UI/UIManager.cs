@@ -3,6 +3,9 @@ using UnityEngine;
 
 namespace Core.UI
 {
+    /// <summary>
+    /// Canvasları kapatıp açmamıza yarar
+    /// </summary>
     public class UIManager : MonoBehaviour, IUIManager
     {
         private readonly Dictionary<UIType, GameObject> _map = new();

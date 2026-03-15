@@ -14,6 +14,9 @@ using ObstacleEntity = Game.Obstacle.Obstacle;
 
 namespace Game.Level
 {
+    /// <summary>
+    /// Level'de bulunan tüm entityleri, mevcut seviye verisine göre spawn eder
+    /// </summary>
     public class LevelManager : MonoBehaviour, ILevelManager
     {
         #region Constants

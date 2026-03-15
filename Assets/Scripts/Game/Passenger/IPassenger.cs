@@ -15,5 +15,6 @@ namespace Game.Passenger
         void Initialize(Vector2Int gridIndex, PassengerColorType colorType);
         void MoveToQueueSlot(QueueSlot slot, Action onComplete = null);
         void BoardBus(Transform boardingPoint, Transform seatTransform, Action onComplete = null);
+        void RelocateToQueueSlot(QueueSlot slot, Action onComplete = null);
     }
 }

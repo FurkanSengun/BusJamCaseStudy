@@ -14,7 +14,6 @@ namespace Core.SceneManagement
     {
         public event Action<string, float> OnSceneLoadProgress;
         public event Action<string> OnSceneLoaded;
-        public event Action<string> OnSceneUnloaded;
 
         [Inject] private IUIManager _uiManager;
 
@@ -110,29 +109,6 @@ namespace Core.SceneManagement
                 await Task.Yield();
                 OnSceneLoaded?.Invoke(sceneName);
             }
-        }
-
-        public async Task UnloadSceneAsync(string sceneName)
-        {
-            AsyncOperation asyncOperation = UnityEngine.SceneManagement.SceneManager.UnloadSceneAsync(sceneName);
-
-            if (asyncOperation == null)
-            {
-                return;
-            }
-
-            while (!asyncOperation.isDone)
-            {
-                await Task.Yield();
-            }
-
-            OnSceneUnloaded?.Invoke(sceneName);
-        }
-
-        public async Task ReloadActiveSceneAsync()
-        {
-            string currentSceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
-            await LoadSceneWithTransitionAsync(currentSceneName);
         }
 
         private bool TryGetLoadingView(out GameObject loadingCanvas, out LoadingView loadingView)

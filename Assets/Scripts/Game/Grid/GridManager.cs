@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace Game.Grid
 {
+    /// <summary>
+    ///     Init edilen gridleri kontrol eder. Dolu olup olmadığını, yürüyebilir olduğunu vs. kontrol eder
+    /// </summary>
     public class GridManager : MonoBehaviour, IGridManager
     {
         private readonly HashSet<Vector2Int> _blockedTiles = new();
@@ -15,9 +18,7 @@ namespace Game.Grid
 
         public void Initialize(Vector2Int gridSize)
         {
-            GridSize = new Vector2Int(
-                Mathf.Max(1, gridSize.x),
-                Mathf.Max(1, gridSize.y));
+            GridSize = new Vector2Int( Mathf.Max(1, gridSize.x), Mathf.Max(1, gridSize.y));
 
             _blockedTiles.Clear();
             _occupiedTiles.Clear();

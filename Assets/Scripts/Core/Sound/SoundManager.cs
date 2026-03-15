@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using Game.Data.PlayerData;
 using UnityEngine;
-using Utils;
 using Zenject;
 
 namespace Core.Sound
@@ -9,7 +8,7 @@ namespace Core.Sound
     [RequireComponent(typeof(AudioSource))]
     public class SoundManager : MonoBehaviour, ISoundManager
     {
-        [Header("References")]
+        [Header("References")] 
         [SerializeField] private AudioSource audioSource;
         [SerializeField] private SfxLibrary sfxLibrary;
 
@@ -24,6 +23,7 @@ namespace Core.Sound
             if (audioSource == null)
             {
                 audioSource = GetComponent<AudioSource>();
+
                 if (_playerDataManager.IsSoundOn)
                 {
                     audioSource.enabled = true;
@@ -49,7 +49,7 @@ namespace Core.Sound
 
         public void PlayOneShot(string soundId, float volumeMultiplier)
         {
-            if (!TryGetClip(soundId, out AudioClip clip, out float defaultVolume))
+            if (!TryGetClip(soundId, out var clip, out float defaultVolume))
             {
                 return;
             }
@@ -73,7 +73,7 @@ namespace Core.Sound
                 return false;
             }
 
-            if (!_soundMap.TryGetValue(soundId, out SfxEntry entry))
+            if (!_soundMap.TryGetValue(soundId, out var entry))
             {
                 return false;
             }
@@ -99,7 +99,7 @@ namespace Core.Sound
                 return;
             }
 
-            foreach (SfxEntry entry in sfxLibrary.Entries)
+            foreach (var entry in sfxLibrary.Entries)
             {
                 if (entry == null || string.IsNullOrWhiteSpace(entry.id))
                 {

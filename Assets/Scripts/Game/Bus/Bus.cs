@@ -6,9 +6,12 @@ using UnityEngine;
 
 namespace Game.Bus
 {
+    /// <summary>
+    /// Otobüs yapay zekasını barındırır. Init olma, hareket etme ve yolcu bindirme mantığını barındırır
+    /// </summary>
     public class Bus : MonoBehaviour, IBus
     {
-        [Header("References")]
+        [Header("References")] 
         [SerializeField] private BusMovementController movementController;
         [SerializeField] private BusVisualController visualController;
         [SerializeField] private Transform boardingPoint;
@@ -56,24 +59,29 @@ namespace Game.Bus
             _seatedPassengers.Clear();
             _reservedSeatCount = 0;
             IsAtStopPoint = false;
-            
+
             visualController?.ApplyBusColor(colorType);
             visualController?.StartEngineIdle();
         }
+
+        public void MoveToPosition(Vector3 worldPosition, float duration, Action onArrived = null)
+        {
+            if (movementController == null)
+            {
+                transform.position = worldPosition;
+                onArrived?.Invoke();
+                return;
+            }
+
+            movementController.MoveTo(worldPosition, duration, onArrived);
+        }
+
 
         public void MoveToStopPoint(Vector3 stopPosition, float duration)
         {
             IsAtStopPoint = false;
 
-            if (movementController == null)
-            {
-                transform.position = stopPosition;
-                IsAtStopPoint = true;
-                OnReachedStopPoint?.Invoke(this);
-                return;
-            }
-
-            movementController.MoveTo(stopPosition, duration, () =>
+            MoveToPosition(stopPosition, duration, () =>
             {
                 IsAtStopPoint = true;
                 OnReachedStopPoint?.Invoke(this);
@@ -104,15 +112,15 @@ namespace Game.Bus
                 return false;
             }
 
-            Transform seat = seatPoints[seatIndex];
+            var seat = seatPoints[seatIndex];
             _reservedSeatCount++;
-            
+
 
             passenger.BoardBus(boardingPoint, seat, () =>
             {
                 _reservedSeatCount = Mathf.Max(0, _reservedSeatCount - 1);
                 _seatedPassengers.Add(passenger);
-                
+
                 onBoarded?.Invoke();
 
                 if (IsFull)
@@ -135,10 +143,7 @@ namespace Game.Bus
                 return;
             }
 
-            movementController.MoveTo(exitPosition, duration, () =>
-            {
-                OnExited?.Invoke(this);
-            });
+            movementController.MoveTo(exitPosition, duration, () => { OnExited?.Invoke(this); });
         }
     }
 }

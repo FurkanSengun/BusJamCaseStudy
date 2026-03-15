@@ -6,6 +6,9 @@ using UnityEngine;
 
 namespace Game.Queue
 {
+    /// <summary>
+    /// Bekleme sırasını kontrol eder ve etkileşime girilen yolcunun durumuna göre sırayı rezerve edip, otobüse binen yolcuları listeden kaldırır
+    /// </summary>
     public class QueueManager : MonoBehaviour, IQueueManager
     {
         private readonly List<QueueSlot> _slots = new();
@@ -203,7 +206,7 @@ namespace Game.Queue
             {
                 QueueSlot targetSlot = _slots[i];
                 targetSlot.TryOccupy(remainingPassengers[i]);
-                remainingPassengers[i].MoveToQueueSlot(targetSlot);
+                remainingPassengers[i].RelocateToQueueSlot(targetSlot);
             }
 
             NotifyQueueChanged();

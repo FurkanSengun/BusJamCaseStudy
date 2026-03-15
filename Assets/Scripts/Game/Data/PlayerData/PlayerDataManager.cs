@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace Game.Data.PlayerData
 {
+    /// <summary>
+    /// Oyuncunun verilerini set eder ve yükler
+    /// </summary>
     public class PlayerDataManager : IPlayerDataManager
     {
         private const string CurrentLevelKey = "player_current_level";

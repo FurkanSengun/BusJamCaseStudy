@@ -20,6 +20,10 @@ namespace Game.Bus
         [Header("Motion")]
         [SerializeField] private float moveToStopDuration = 0.5f;
         [SerializeField] private float moveToExitDuration = 0.75f;
+        
+        [Header("Queue Layout")]
+        [SerializeField] private float busGap = 10f;
+        [SerializeField] private float queueShiftDuration = 0.35f;
 
         private readonly List<IBus> _buses = new();
 
@@ -70,6 +74,7 @@ namespace Game.Bus
             }
 
             MoveCurrentBusToStopPoint();
+            RefreshQueuedBusPositions(true);
         }
 
         public bool TryBoardSelectedPassenger(IPassenger passenger)
@@ -130,7 +135,7 @@ namespace Game.Bus
 
             if (_currentBusIndex < _buses.Count)
             {
-                MoveCurrentBusToStopPoint();
+                RefreshQueuedBusPositions(true);
             }
         }
 
@@ -226,6 +231,46 @@ namespace Game.Bus
             }
 
             return _buses[_currentBusIndex];
+        }
+
+        private Vector3 GetQueuedBusPosition(int busIndex)
+        {
+            if (stopPoint == null)
+            {
+                return Vector3.zero;
+            }
+            
+            int offsetFromCurrent = busIndex - _currentBusIndex;
+
+            return stopPoint.position - stopPoint.right * (offsetFromCurrent * busGap);
+        }
+        private void RefreshQueuedBusPositions(bool includeCurrentBus)
+        {
+            for (int i = _currentBusIndex; i < _buses.Count; i++)
+            {
+                IBus bus = _buses[i];
+
+                if (bus == null)
+                {
+                    continue;
+                }
+
+                if (!includeCurrentBus && i == _currentBusIndex)
+                {
+                    continue;
+                }
+
+                Vector3 targetPosition = GetQueuedBusPosition(i);
+
+                if (i == _currentBusIndex)
+                {
+                    bus.MoveToStopPoint(targetPosition, moveToStopDuration);
+                }
+                else
+                {
+                    bus.MoveToPosition(targetPosition, queueShiftDuration);
+                }
+            }
         }
 
         private void UnsubscribeAll()

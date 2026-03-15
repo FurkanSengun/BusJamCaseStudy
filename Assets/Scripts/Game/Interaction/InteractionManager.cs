@@ -5,6 +5,9 @@ using Zenject;
 
 namespace Game.Interaction
 {
+    /// <summary>
+    /// Sahnede etkileşime girilebilir objeleri bulup(Passenger) oyuncunun inputlarını algılar ve gerekli eventleri invoke eder
+    /// </summary>
     public class InteractionManager : MonoBehaviour, IInteractionManager
     {
         private IInputManager _inputManager;
