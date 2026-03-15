@@ -7,6 +7,9 @@ namespace Game.Level
 {
     public interface ILevelManager
     {
+        int LoadedLevelIndex { get; }
+        bool IsLastPlayableLevel { get; }
+        
         event Action<LevelData> OnLevelLoadStarted;
         event Action<LevelData> OnLevelLoaded;
         event Action OnLevelCleared;

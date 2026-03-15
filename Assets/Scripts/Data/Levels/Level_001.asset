@@ -19,7 +19,7 @@ MonoBehaviour:
   cells:
   - gridIndex: {x: 0, y: 0}
     cellType: 1
-    passengerColor: 1
+    passengerColor: 0
   - gridIndex: {x: 1, y: 0}
     cellType: 1
     passengerColor: 0
@@ -34,7 +34,7 @@ MonoBehaviour:
     passengerColor: 1
   - gridIndex: {x: 2, y: 1}
     cellType: 1
-    passengerColor: 0
+    passengerColor: 1
   queueSlots:
   - queueIndex: 0
     rootLocalPosition: {x: 0, y: 0, z: 0}
@@ -46,7 +46,7 @@ MonoBehaviour:
     - {x: 5, y: 0, z: 0}
   passengers:
   - gridIndex: {x: 0, y: 0}
-    color: 1
+    color: 0
   - gridIndex: {x: 1, y: 0}
     color: 0
   - gridIndex: {x: 2, y: 0}
@@ -56,7 +56,7 @@ MonoBehaviour:
   - gridIndex: {x: 1, y: 1}
     color: 1
   - gridIndex: {x: 2, y: 1}
-    color: 0
+    color: 1
   buses:
   - order: 0
     colorType: 0

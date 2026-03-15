@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using Core.SceneManagement;
 using Core.UI;
 using Game.GameManager;
+using UnityEngine;
 
 namespace Game.States
 {
@@ -10,7 +11,8 @@ namespace Game.States
         private readonly IUIManager _uiManager;
         private readonly ISceneManager _sceneManager;
 
-        public MenuState(IGameManager gameManager, IUIManager uiManager, ISceneManager sceneManager) : base(gameManager)
+        public MenuState(IGameManager gameManager, IUIManager uiManager, ISceneManager sceneManager)
+            : base(gameManager)
         {
             _uiManager = uiManager;
             _sceneManager = sceneManager;
@@ -18,6 +20,16 @@ namespace Game.States
 
         public override void Enter()
         {
+            Time.timeScale = 1f;
+
+            string activeSceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+
+            if (activeSceneName == SceneNames.MenuScene)
+            {
+                _uiManager.Show(UIType.Menu, true);
+                return;
+            }
+
             _sceneManager.OnSceneLoaded -= HandleSceneLoaded;
             _sceneManager.OnSceneLoaded += HandleSceneLoaded;
 
@@ -27,33 +39,24 @@ namespace Game.States
         private async Task EnterAsync()
         {
             _uiManager.HideAllSceneUI();
-            _uiManager.Show(UIType.Loading, true);
-
-            await _sceneManager.LoadSceneWithTransitionAsync(SceneNames.MenuScene);
-        }
-
-        public override void Tick()
-        {
+            await _sceneManager.LoadSceneWithTransitionAsync(SceneNames.MenuScene, useLoadingScreen: true);
         }
 
         public override void Exit()
         {
             _sceneManager.OnSceneLoaded -= HandleSceneLoaded;
-
             _uiManager.Hide(UIType.Menu);
         }
 
         private void HandleSceneLoaded(string sceneName)
         {
-            if (sceneName != SceneNames.MenuScene) return;
+            if (sceneName != SceneNames.MenuScene)
+            {
+                return;
+            }
 
             _sceneManager.OnSceneLoaded -= HandleSceneLoaded;
-            OnMenuSceneLoaded();
-        }
-
-        private void OnMenuSceneLoaded()
-        {
-            _uiManager.Show(UIType.Menu);
+            _uiManager.Show(UIType.Menu, true);
         }
     }
 }

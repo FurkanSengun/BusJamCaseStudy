@@ -4,6 +4,8 @@ namespace Core.Sound
 {
     public interface ISoundManager
     {
-        void PlayOneShot(string soundId, float volume);
+        void PlayOneShot(string soundId);
+        void PlayOneShot(string soundId, float volumeMultiplier);
+        
     }
 }

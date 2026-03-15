@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Game.Data.PlayerData;
 using UnityEngine;
+using Utils;
 using Zenject;
 
 namespace Core.Sound
@@ -8,9 +9,10 @@ namespace Core.Sound
     [RequireComponent(typeof(AudioSource))]
     public class SoundManager : MonoBehaviour, ISoundManager
     {
-        [Header("References")] 
+        [Header("References")]
         [SerializeField] private AudioSource audioSource;
         [SerializeField] private SfxLibrary sfxLibrary;
+
         private readonly Dictionary<string, SfxEntry> _soundMap = new();
 
         [Inject] private IPlayerDataManager _playerDataManager;
@@ -19,10 +21,18 @@ namespace Core.Sound
         {
             BuildLibraryMap();
 
+            if (audioSource == null)
+            {
+                audioSource = GetComponent<AudioSource>();
+                if (_playerDataManager.IsSoundOn)
+                {
+                    audioSource.enabled = true;
+                }
+            }
+
             ApplySoundState(_playerDataManager.IsSoundOn);
             _playerDataManager.OnSoundStateChanged += ApplySoundState;
         }
-
 
         private void OnDestroy()
         {
@@ -32,14 +42,20 @@ namespace Core.Sound
             }
         }
 
-        public void PlayOneShot(string soundId, float volume)
+        public void PlayOneShot(string soundId)
         {
-            if (!TryGetClip(soundId, out var clip, out _))
+            PlayOneShot(soundId, 1f);
+        }
+
+        public void PlayOneShot(string soundId, float volumeMultiplier)
+        {
+            if (!TryGetClip(soundId, out AudioClip clip, out float defaultVolume))
             {
                 return;
             }
 
-            audioSource.PlayOneShot(clip, volume);
+            float finalVolume = Mathf.Clamp01(defaultVolume * volumeMultiplier);
+            audioSource.PlayOneShot(clip, finalVolume);
         }
 
         private bool TryGetClip(string soundId, out AudioClip clip, out float defaultVolume)
@@ -47,7 +63,7 @@ namespace Core.Sound
             clip = null;
             defaultVolume = 1f;
 
-            if (!_playerDataManager.IsSoundOn)
+            if (_playerDataManager == null || !_playerDataManager.IsSoundOn)
             {
                 return false;
             }
@@ -57,7 +73,7 @@ namespace Core.Sound
                 return false;
             }
 
-            if (!_soundMap.TryGetValue(soundId, out var entry))
+            if (!_soundMap.TryGetValue(soundId, out SfxEntry entry))
             {
                 return false;
             }
@@ -83,7 +99,7 @@ namespace Core.Sound
                 return;
             }
 
-            foreach (var entry in sfxLibrary.Entries)
+            foreach (SfxEntry entry in sfxLibrary.Entries)
             {
                 if (entry == null || string.IsNullOrWhiteSpace(entry.id))
                 {

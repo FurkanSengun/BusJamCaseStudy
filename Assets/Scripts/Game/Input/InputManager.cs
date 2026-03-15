@@ -10,7 +10,7 @@ namespace Game.Input
         [SerializeField] private Camera mainCamera;
 
         public event Action OnPrimaryInputStarted;
-        public event Action<Vector3> OnWorldInputDetected;
+        public event Action<RaycastHit> OnWorldHitDetected;
 
         private void Awake()
         {
@@ -35,7 +35,9 @@ namespace Game.Input
 
         private bool HasPrimaryInputDown()
         {
-            return UnityEngine.Input.GetMouseButtonDown(0) || (UnityEngine.Input.touchCount > 0 && UnityEngine.Input.GetTouch(0).phase == TouchPhase.Began);
+            return UnityEngine.Input.GetMouseButtonDown(0) ||
+                   (UnityEngine.Input.touchCount > 0 &&
+                    UnityEngine.Input.GetTouch(0).phase == TouchPhase.Began);
         }
 
         private Vector3 GetInputPosition()
@@ -59,7 +61,7 @@ namespace Game.Input
 
             if (Physics.Raycast(ray, out RaycastHit hit, 100f, clickableLayer))
             {
-                OnWorldInputDetected?.Invoke(hit.point);
+                OnWorldHitDetected?.Invoke(hit);
             }
         }
     }

@@ -18,10 +18,11 @@ namespace Core.SceneManagement
             CancellationToken cancellationToken = default,
             bool allowSceneActivation = true);
 
-        Task LoadSceneWithTransitionAsync(
+        Task<bool> LoadSceneWithTransitionAsync(
             string sceneName,
             LoadSceneMode mode = LoadSceneMode.Single,
-            CancellationToken cancellationToken = default);
+            CancellationToken cancellationToken = default,
+            bool useLoadingScreen = true);
 
         Task UnloadSceneAsync(string sceneName);
 

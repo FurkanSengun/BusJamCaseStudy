@@ -7,44 +7,44 @@ namespace Game.WinCondition
         public event Action OnLevelCompleted;
 
         public bool IsLevelCompleted { get; private set; }
-        public int TotalPassengerCount { get; private set; }
-        public int BoardedPassengerCount { get; private set; }
+        public int TotalBusCount { get; private set; }
+        public int CompletedBusCount { get; private set; }
 
-        public void Initialize(int totalPassengerCount)
+        public void Initialize(int totalBusCount)
         {
-            TotalPassengerCount = Math.Max(0, totalPassengerCount);
-            BoardedPassengerCount = 0;
+            TotalBusCount = Math.Max(0, totalBusCount);
+            CompletedBusCount = 0;
             IsLevelCompleted = false;
 
             CheckCompletion();
         }
 
-        public void NotifyPassengerBoarded()
+        public void NotifyBusCompleted()
         {
             if (IsLevelCompleted)
             {
                 return;
             }
 
-            if (BoardedPassengerCount >= TotalPassengerCount)
+            if (CompletedBusCount >= TotalBusCount)
             {
                 return;
             }
 
-            BoardedPassengerCount++;
+            CompletedBusCount++;
             CheckCompletion();
         }
 
         public void ResetTracker()
         {
-            TotalPassengerCount = 0;
-            BoardedPassengerCount = 0;
+            TotalBusCount = 0;
+            CompletedBusCount = 0;
             IsLevelCompleted = false;
         }
 
         private void CheckCompletion()
         {
-            if (BoardedPassengerCount < TotalPassengerCount)
+            if (CompletedBusCount < TotalBusCount)
             {
                 return;
             }

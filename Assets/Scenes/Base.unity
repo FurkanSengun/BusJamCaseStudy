@@ -468,16 +468,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Title Screen Canvas
       objectReference: {fileID: 0}
-    - target: {fileID: 2741788215005361581, guid: 441f6ddd89c932848b266c465a45bfa3,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5212442039284237745, guid: 441f6ddd89c932848b266c465a45bfa3,
-        type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 5446254719128937062, guid: 441f6ddd89c932848b266c465a45bfa3,
         type: 3}
       propertyPath: m_Pivot.x
@@ -576,11 +566,6 @@ PrefabInstance:
     - target: {fileID: 5446254719128937062, guid: 441f6ddd89c932848b266c465a45bfa3,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8619633228775977390, guid: 441f6ddd89c932848b266c465a45bfa3,
-        type: 3}
-      propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []

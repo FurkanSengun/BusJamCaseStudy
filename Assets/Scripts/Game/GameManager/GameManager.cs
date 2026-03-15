@@ -1,5 +1,6 @@
 using Core.FSM;
 using Core.SceneManagement;
+using Core.Sound;
 using Core.UI;
 using Game.Data.PlayerData;
 using Game.States;
@@ -15,18 +16,15 @@ namespace Game.GameManager
         private IUIManager _uiManager;
         private ISceneManager _sceneManager;
         private IPlayerDataManager _playerDataManager;
-
-        public IState CurrentState => _stateMachine.CurrentState;
+        private ISoundManager _soundManager;
 
         [Inject]
-        public void Construct(
-            IUIManager uiManager,
-            ISceneManager sceneManager,
-            IPlayerDataManager playerDataManager)
+        public void Construct( IUIManager uiManager, ISceneManager sceneManager, IPlayerDataManager playerDataManager, ISoundManager soundManager)
         {
             _uiManager = uiManager;
             _sceneManager = sceneManager;
             _playerDataManager = playerDataManager;
+            _soundManager = soundManager;
         }
 
         private void Start()
@@ -57,12 +55,18 @@ namespace Game.GameManager
 
         public void StartGameplay()
         {
-            ChangeState(new GameplayState(this, _uiManager, _sceneManager));
+            ChangeState(new GameplayState(this, _uiManager, _sceneManager,  _soundManager));
         }
 
         public void EnterLose()
         {
-            ChangeState(new LoseState(this, _uiManager));
+            ChangeState(new LoseState(this, _uiManager, _soundManager));
+        }
+
+        public void CompleteCurrentLevel()
+        {
+            _playerDataManager.SetCurrentLevel(_playerDataManager.CurrentLevel + 1);
+            ChangeState(new WinState(this, _uiManager, _soundManager));
         }
     }
 }

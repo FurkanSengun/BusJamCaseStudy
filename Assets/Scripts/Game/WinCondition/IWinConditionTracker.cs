@@ -7,11 +7,11 @@ namespace Game.WinCondition
         event Action OnLevelCompleted;
 
         bool IsLevelCompleted { get; }
-        int TotalPassengerCount { get; }
-        int BoardedPassengerCount { get; }
+        int TotalBusCount { get; }
+        int CompletedBusCount { get; }
 
-        void Initialize(int totalPassengerCount);
-        void NotifyPassengerBoarded();
+        void Initialize(int totalBusCount);
+        void NotifyBusCompleted();
         void ResetTracker();
     }
 }

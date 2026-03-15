@@ -1,28 +1,31 @@
+using Core.Sound;
+using Core.UI;
 using Game.GameManager;
+using UnityEngine;
 
 namespace Game.States
 {
     public class WinState : GameState
     {
-        protected readonly IGameManager _gameManager;
+        private readonly IUIManager _uiManager;
+        private readonly ISoundManager _soundManager;
 
-        protected WinState(IGameManager gameManager) : base(gameManager)
+        public WinState(IGameManager gameManager, IUIManager uiManager, ISoundManager soundManager) : base(gameManager)
         {
-            _gameManager = gameManager;
-        }
-        
-
-        public virtual void Enter()
-        {
-            
-        }
-        public virtual void Tick()
-        {
+            _uiManager = uiManager;
+            _soundManager = soundManager;
         }
 
-        public virtual void Exit()
+        public override void Enter()
         {
-            
+            Time.timeScale = 1;
+            _soundManager?.PlayOneShot(SfxIds.Win);
+            _uiManager.Show(UIType.Win, true);
+        }
+
+        public override void Exit()
+        {
+            _uiManager.Hide(UIType.Win);
         }
     }
 }

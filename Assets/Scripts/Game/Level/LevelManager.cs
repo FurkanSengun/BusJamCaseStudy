@@ -1,11 +1,16 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Game.Bus;
 using Game.Data;
 using Game.Data.PlayerData;
+using Game.Grid;
+using Game.Queue;
 using UnityEngine;
 using Utils;
 using Zenject;
+using PassengerEntity = Game.Passenger.Passenger;
+using ObstacleEntity = Game.Obstacle.Obstacle;
 
 namespace Game.Level
 {
@@ -14,47 +19,61 @@ namespace Game.Level
         #region Constants
         private const float GridGap = 1.2f;
         private const float SurfaceLift = 0.01f;
-        private const float BusSpacing = 8f;
+        private const float BusSpacing = 10f;
         #endregion
 
-        [Header("Data")] 
+        #region Inspector
+        [Header("Data")]
         [SerializeField] private LevelDatabase levelDatabase;
         [SerializeField] private LevelPrefabRegistry prefabRegistry;
 
-        [Header("Scene Roots")] 
+        [Header("Scene Roots")]
         [SerializeField] private Transform groundRoot;
-
         [SerializeField] private Transform queueRoot;
         [SerializeField] private Transform busRoot;
 
-        [Header("Bus Spawn")] 
+        [Header("Bus Spawn")]
         [SerializeField] private Transform busSpawnPoint;
 
-        [Header("Offsets")] 
-        
+        [Header("Offsets")]
         [SerializeField] private Vector3 passengerOffset = Vector3.zero;
         [SerializeField] private Vector3 obstacleOffset = Vector3.zero;
         [SerializeField] private Vector3 busOffset = Vector3.zero;
 
-        [Header("Load")] [SerializeField] private bool loadOnStart = false;
+        [Header("Load")]
+        [SerializeField] private bool loadOnStart = false;
+        #endregion
 
+        #region Fields
         private readonly Dictionary<Vector2Int, GameObject> _groundLookup = new();
 
         [Inject] private IPlayerDataManager _playerDataManager;
+        [Inject] private DiContainer _container;
+        [Inject] private IQueueManager _queueManager;
+        [Inject] private IGridManager _gridManager;
+        [Inject] private IBusManager _busManager;
+        #endregion
 
+        #region Events
         public event Action<LevelData> OnLevelLoadStarted;
         public event Action<LevelData> OnLevelLoaded;
         public event Action OnLevelCleared;
         public event Action<string> OnLevelLoadFailed;
+        #endregion
 
+        #region Properties
         public LevelData LoadedLevelData { get; private set; }
         public bool IsLevelLoaded => LoadedLevelData != null;
+        
+        public int LoadedLevelIndex { get; private set; }
+        public bool IsLastPlayableLevel => LoadedLevelIndex >= GetLastPlayableLevelIndex();
 
         public Transform GroundRoot => groundRoot;
         public Transform QueueRoot => queueRoot;
         public Transform BusRoot => busRoot;
-        
+        #endregion
 
+        #region Unity Lifecycle
         private void Start()
         {
             if (!loadOnStart)
@@ -64,7 +83,8 @@ namespace Game.Level
 
             Load();
         }
-
+        #endregion
+        
         public bool Load()
         {
             if (!ValidateDependencies())
@@ -108,7 +128,8 @@ namespace Game.Level
         {
             return _groundLookup;
         }
-
+        
+        
         private bool BuildLevel(LevelData levelData)
         {
             if (levelData == null)
@@ -122,17 +143,26 @@ namespace Game.Level
             ResetLevelContent();
             LoadedLevelData = levelData;
 
+            _gridManager?.Initialize(levelData.gridSize);
+
             SpawnGround(levelData);
             SpawnQueue(levelData);
             SpawnPassengers(levelData);
             SpawnObstacles(levelData);
             SpawnBuses(levelData);
 
-            OnLevelLoaded?.Invoke(levelData);
+            InitializeRuntimeManagers();
 
+            OnLevelLoaded?.Invoke(levelData);
             return true;
         }
 
+        private void InitializeRuntimeManagers()
+        {
+            _queueManager?.Initialize(queueRoot);
+            _busManager?.Initialize(busRoot);
+        }
+        
         private bool ValidateDependencies()
         {
             if (levelDatabase == null)
@@ -153,12 +183,21 @@ namespace Game.Level
         private bool TryResolveLevelData(out LevelData levelData)
         {
             levelData = null;
-            
-            int currentLevelNumber = _playerDataManager != null
+
+            int savedLevelIndex = _playerDataManager != null
                 ? _playerDataManager.CurrentLevel
                 : 0;
 
-            levelData = levelDatabase.GetLevel(currentLevelNumber);
+            int lastPlayableLevelIndex = GetLastPlayableLevelIndex();
+            int clampedLevelIndex = Mathf.Clamp(savedLevelIndex, 0, lastPlayableLevelIndex);
+
+            if (_playerDataManager != null && clampedLevelIndex != savedLevelIndex)
+            {
+                _playerDataManager.SetCurrentLevel(clampedLevelIndex);
+            }
+
+            LoadedLevelIndex = clampedLevelIndex;
+            levelData = levelDatabase.GetLevel(clampedLevelIndex);
 
             if (levelData != null)
             {
@@ -182,9 +221,9 @@ namespace Game.Level
                 for (int x = 0; x < levelData.gridSize.x; x++)
                 {
                     Vector2Int cellIndex = new(x, y);
-                    var localPosition = GridToLocalPosition(cellIndex, levelData);
+                    Vector3 localPosition = GridToLocalPosition(cellIndex, levelData);
 
-                    var instance = Instantiate(prefabRegistry.groundCellPrefab, groundRoot);
+                    GameObject instance = InstantiateInjectedPrefab(prefabRegistry.groundCellPrefab, groundRoot);
                     instance.transform.localPosition = localPosition;
                     instance.transform.localRotation = Quaternion.identity;
                     instance.transform.localScale = Vector3.one;
@@ -207,7 +246,7 @@ namespace Game.Level
                 return;
             }
 
-            var queueData = levelData.queueSlots[0];
+            QueueData queueData = levelData.queueSlots[0];
 
             GameObject queueContainer = new("Queue_0");
             queueContainer.transform.SetParent(queueRoot, false);
@@ -217,11 +256,16 @@ namespace Game.Level
 
             for (int i = 0; i < queueData.localPositions.Count; i++)
             {
-                var slot = Instantiate(prefabRegistry.queueSlotPrefab, queueContainer.transform);
-                slot.transform.localPosition = queueData.localPositions[i];
-                slot.transform.localRotation = Quaternion.identity;
-                slot.transform.localScale = Vector3.one;
-                slot.name = $"QueueSlot_{i}";
+                GameObject slotObject = InstantiateInjectedPrefab(prefabRegistry.queueSlotPrefab, queueContainer.transform);
+                slotObject.transform.localPosition = queueData.localPositions[i];
+                slotObject.transform.localRotation = Quaternion.identity;
+                slotObject.transform.localScale = Vector3.one;
+                slotObject.name = $"QueueSlot_{i}";
+
+                if (slotObject.TryGetComponent(out QueueSlot queueSlot))
+                {
+                    queueSlot.Initialize(i);
+                }
             }
         }
 
@@ -232,14 +276,14 @@ namespace Game.Level
                 return;
             }
 
-            foreach (var passengerData in levelData.passengers)
+            foreach (PassengerData passengerData in levelData.passengers)
             {
-                if (!_groundLookup.TryGetValue(passengerData.gridIndex, out var groundTile))
+                if (!_groundLookup.TryGetValue(passengerData.gridIndex, out GameObject groundTile))
                 {
                     continue;
                 }
 
-                var instance = Instantiate(prefabRegistry.passengerPrefab, groundTile.transform);
+                GameObject instance = InstantiateInjectedPrefab(prefabRegistry.passengerPrefab, groundTile.transform);
                 instance.transform.localPosition = passengerOffset;
                 instance.transform.localRotation = Quaternion.identity;
                 instance.transform.localScale = Vector3.one;
@@ -247,6 +291,11 @@ namespace Game.Level
 
                 LevelColorHandler.ApplyColor(instance, passengerData.color);
                 LevelSnapHandler.SnapToCellSurface(instance.transform, groundTile.transform, SurfaceLift);
+
+                if (instance.TryGetComponent(out PassengerEntity passenger))
+                {
+                    passenger.Initialize(passengerData.gridIndex, passengerData.color);
+                }
             }
         }
 
@@ -257,20 +306,25 @@ namespace Game.Level
                 return;
             }
 
-            foreach (var obstacleData in levelData.obstacles)
+            foreach (ObstacleData obstacleData in levelData.obstacles)
             {
-                if (!_groundLookup.TryGetValue(obstacleData.gridIndex, out var groundTile))
+                if (!_groundLookup.TryGetValue(obstacleData.gridIndex, out GameObject groundTile))
                 {
                     continue;
                 }
 
-                var instance = Instantiate(prefabRegistry.obstaclePrefab, groundTile.transform);
+                GameObject instance = InstantiateInjectedPrefab(prefabRegistry.obstaclePrefab, groundTile.transform);
                 instance.transform.localPosition = obstacleOffset;
                 instance.transform.localRotation = Quaternion.identity;
                 instance.transform.localScale = Vector3.one;
                 instance.name = $"Obstacle_{obstacleData.gridIndex.x}_{obstacleData.gridIndex.y}";
 
                 LevelSnapHandler.SnapToCellSurface(instance.transform, groundTile.transform, SurfaceLift);
+
+                if (instance.TryGetComponent(out ObstacleEntity obstacle))
+                {
+                    obstacle.Initialize(obstacleData.gridIndex);
+                }
             }
         }
 
@@ -281,30 +335,33 @@ namespace Game.Level
                 return;
             }
 
-            var orderedBuses = levelData.buses
+            List<BusData> orderedBuses = levelData.buses
                 .OrderBy(bus => bus.order)
                 .ToList();
 
             for (int i = 0; i < orderedBuses.Count; i++)
             {
-                var busData = orderedBuses[i];
+                BusData busData = orderedBuses[i];
 
-                var worldPosition =
+                Vector3 worldPosition =
                     busSpawnPoint.position
                     - busSpawnPoint.right * (i * BusSpacing)
                     + busOffset;
 
-                var worldRotation = busSpawnPoint.rotation;
+                Quaternion worldRotation = busSpawnPoint.rotation;
 
-                var instance = Instantiate(prefabRegistry.busPrefab, worldPosition, worldRotation, busRoot);
+                GameObject instance = InstantiateInjectedPrefab(prefabRegistry.busPrefab, worldPosition, worldRotation, busRoot);
                 instance.name = $"Bus_{busData.order}_{busData.colorType}";
-
-                LevelColorHandler.ApplyColor(instance, busData.colorType);
+                
+                if (instance.TryGetComponent(out Game.Bus.Bus bus))
+                {
+                    bus.Initialize(busData.order, busData.colorType, busData.capacity);
+                }
             }
         }
-        
         #endregion
 
+        #region Helpers
         private Vector3 GridToLocalPosition(Vector2Int gridIndex, LevelData levelData)
         {
             float step = levelData.cellSize + GridGap;
@@ -340,7 +397,9 @@ namespace Game.Level
             ClearChildren(groundRoot);
             ClearChildren(queueRoot);
             ClearChildren(busRoot);
+
             _groundLookup.Clear();
+            _gridManager?.Clear();
         }
 
         private void ClearChildren(Transform root)
@@ -356,10 +415,39 @@ namespace Game.Level
             }
         }
 
+        private GameObject InstantiateInjectedPrefab(GameObject prefab, Transform parent)
+        {
+            return _container.InstantiatePrefab(prefab, parent);
+        }
+
+        private GameObject InstantiateInjectedPrefab(GameObject prefab, Vector3 position, Quaternion rotation, Transform parent)
+        {
+            return _container.InstantiatePrefab(prefab, position, rotation, parent);
+        }
+        
+        private int GetLastPlayableLevelIndex()
+        {
+            if (levelDatabase == null || levelDatabase.levels == null || levelDatabase.levels.Count == 0)
+            {
+                return 0;
+            }
+
+            for (int i = levelDatabase.levels.Count - 1; i >= 0; i--)
+            {
+                if (levelDatabase.levels[i] != null)
+                {
+                    return i;
+                }
+            }
+
+            return 0;
+        }
+
         private void NotifyLoadFailed(string message)
         {
             DevLog.LogWarning(message);
             OnLevelLoadFailed?.Invoke(message);
         }
+        #endregion
     }
 }

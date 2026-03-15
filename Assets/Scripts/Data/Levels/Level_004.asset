@@ -1,0 +1,109 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ce1c5f501b9c434bbe90b9d9314863c6, type: 3}
+  m_Name: Level_004
+  m_EditorClassIdentifier: 
+  levelNumber: 3
+  gridSize: {x: 3, y: 5}
+  cellSize: 1
+  timeLimit: 30
+  cells:
+  - gridIndex: {x: 0, y: 0}
+    cellType: 2
+    passengerColor: 0
+  - gridIndex: {x: 1, y: 0}
+    cellType: 1
+    passengerColor: 1
+  - gridIndex: {x: 2, y: 0}
+    cellType: 2
+    passengerColor: 0
+  - gridIndex: {x: 0, y: 1}
+    cellType: 2
+    passengerColor: 0
+  - gridIndex: {x: 1, y: 1}
+    cellType: 1
+    passengerColor: 1
+  - gridIndex: {x: 2, y: 1}
+    cellType: 2
+    passengerColor: 0
+  - gridIndex: {x: 0, y: 2}
+    cellType: 1
+    passengerColor: 2
+  - gridIndex: {x: 1, y: 2}
+    cellType: 1
+    passengerColor: 4
+  - gridIndex: {x: 2, y: 2}
+    cellType: 2
+    passengerColor: 0
+  - gridIndex: {x: 0, y: 3}
+    cellType: 1
+    passengerColor: 1
+  - gridIndex: {x: 1, y: 3}
+    cellType: 2
+    passengerColor: 0
+  - gridIndex: {x: 2, y: 3}
+    cellType: 1
+    passengerColor: 4
+  - gridIndex: {x: 0, y: 4}
+    cellType: 1
+    passengerColor: 2
+  - gridIndex: {x: 1, y: 4}
+    cellType: 1
+    passengerColor: 2
+  - gridIndex: {x: 2, y: 4}
+    cellType: 1
+    passengerColor: 4
+  queueSlots:
+  - queueIndex: 0
+    rootLocalPosition: {x: 0, y: 0, z: 0}
+    localPositions:
+    - {x: -5, y: 0, z: 0}
+    - {x: -2.5, y: 0, z: 0}
+    - {x: 0, y: 0, z: 0}
+    - {x: 2.5, y: 0, z: 0}
+    - {x: 5, y: 0, z: 0}
+  passengers:
+  - gridIndex: {x: 1, y: 0}
+    color: 1
+  - gridIndex: {x: 1, y: 1}
+    color: 1
+  - gridIndex: {x: 0, y: 2}
+    color: 2
+  - gridIndex: {x: 1, y: 2}
+    color: 4
+  - gridIndex: {x: 0, y: 3}
+    color: 1
+  - gridIndex: {x: 2, y: 3}
+    color: 4
+  - gridIndex: {x: 0, y: 4}
+    color: 2
+  - gridIndex: {x: 1, y: 4}
+    color: 2
+  - gridIndex: {x: 2, y: 4}
+    color: 4
+  buses:
+  - order: 0
+    colorType: 2
+    capacity: 3
+  - order: 1
+    colorType: 1
+    capacity: 3
+  - order: 2
+    colorType: 4
+    capacity: 3
+  obstacles:
+  - gridIndex: {x: 0, y: 0}
+  - gridIndex: {x: 2, y: 0}
+  - gridIndex: {x: 0, y: 1}
+  - gridIndex: {x: 2, y: 1}
+  - gridIndex: {x: 2, y: 2}
+  - gridIndex: {x: 1, y: 3}

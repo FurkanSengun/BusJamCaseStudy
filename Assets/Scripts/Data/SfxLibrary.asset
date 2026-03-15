@@ -12,4 +12,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 18495061f4ee414b84734bff2e99f8b9, type: 3}
   m_Name: SfxLibrary
   m_EditorClassIdentifier: 
-  entries: []
+  entries:
+  - id: BusHorn
+    clips:
+    - {fileID: 8300000, guid: be4706c2749ff1a4ea1eef26d6079c57, type: 3}
+    volume: 0.5
+  - id: UIClick
+    clips:
+    - {fileID: 8300000, guid: 4fbcc22a3b9ec55418d0b87d9ffff385, type: 3}
+    volume: 0.5
+  - id: PassengerClick
+    clips:
+    - {fileID: 8300000, guid: 39bf0d815f0f9f8408ac66d3ca01c5ca, type: 3}
+    volume: 0.5
+  - id: Win
+    clips:
+    - {fileID: 8300000, guid: d07998b2dabf08240bca8eb3b395396a, type: 3}
+    volume: 0.5
+  - id: Lose
+    clips:
+    - {fileID: 8300000, guid: f1f11a9d85686654ea156b1bc5f3a9f7, type: 3}
+    volume: 0.5

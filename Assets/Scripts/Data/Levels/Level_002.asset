@@ -21,7 +21,7 @@ MonoBehaviour:
     cellType: 0
     passengerColor: 0
   - gridIndex: {x: 1, y: 0}
-    cellType: 0
+    cellType: 2
     passengerColor: 0
   - gridIndex: {x: 2, y: 0}
     cellType: 0
@@ -73,4 +73,5 @@ MonoBehaviour:
   - order: 1
     colorType: 0
     capacity: 3
-  obstacles: []
+  obstacles:
+  - gridIndex: {x: 1, y: 0}

@@ -5,6 +5,7 @@ using Core.UI;
 using Game.UI;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Utils;
 using Zenject;
 
 namespace Core.SceneManagement
@@ -19,53 +20,50 @@ namespace Core.SceneManagement
 
         private bool _isTransitioning;
 
-        public async Task LoadSceneWithTransitionAsync( string sceneName, LoadSceneMode mode = LoadSceneMode.Single, CancellationToken cancellationToken = default)
+        public async Task<bool> LoadSceneWithTransitionAsync( string sceneName, LoadSceneMode mode = LoadSceneMode.Single, CancellationToken cancellationToken = default, bool useLoadingScreen = true)
         {
-            if (_isTransitioning) return;
+            if (_isTransitioning)
+            {
+                DevLog.LogWarning($"Scene transition blocked. Already transitioning while trying to load: {sceneName}");
+                return false;
+            }
 
             _isTransitioning = true;
 
-            LoadingView currentLoadingView = null;
-
-            if (_uiManager.TryGet(UIType.Loading, out var currentLoadingCanvas) && currentLoadingCanvas != null)
+            try
             {
-                _uiManager.Show(UIType.Loading, true);
+                LoadingView currentLoadingView = null;
 
-                currentLoadingView = currentLoadingCanvas.GetComponent<LoadingView>();
-                if (currentLoadingView != null)
+                if (useLoadingScreen && TryGetLoadingView(out _, out currentLoadingView))
                 {
+                    currentLoadingView.gameObject.SetActive(true);
                     currentLoadingView.SetProgress(0f);
                     await currentLoadingView.FadeToBlackAsync(cancellationToken);
                 }
-            }
 
-            await LoadSceneAsync(
-                sceneName,
-                mode,
-                new Progress<float>(progress =>
+                await LoadSceneAsync(
+                    sceneName,
+                    mode,
+                    new Progress<float>(progress =>
+                    {
+                        currentLoadingView?.SetProgress(progress);
+                    }),
+                    cancellationToken,
+                    true);
+
+                if (useLoadingScreen && TryGetLoadingView(out GameObject nextLoadingCanvas, out LoadingView nextLoadingView))
                 {
-                    currentLoadingView?.SetProgress(progress);
-                }),
-                cancellationToken,
-                true);
-
-            if (_uiManager.TryGet(UIType.Loading, out var nextLoadingCanvas) && nextLoadingCanvas != null)
-            {
-                _uiManager.Show(UIType.Loading);
-
-                var nextLoadingView = nextLoadingCanvas.GetComponent<LoadingView>();
-                if (nextLoadingView != null)
-                {
+                    nextLoadingCanvas.SetActive(true);
                     nextLoadingView.SetProgress(1f);
-                    await nextLoadingView.FadeOutAndHideAsync(cancellationToken);
+                    await nextLoadingView.ShowCompletedAndHideAsync(cancellationToken);
                 }
-                else
-                {
-                    _uiManager.Hide(UIType.Loading);
-                }
-            }
 
-            _isTransitioning = false;
+                return true;
+            }
+            finally
+            {
+                _isTransitioning = false;
+            }
         }
 
         public async Task LoadSceneAsync(
@@ -75,10 +73,12 @@ namespace Core.SceneManagement
             CancellationToken cancellationToken = default,
             bool allowSceneActivation = true)
         {
-            var asyncOperation = UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(sceneName, mode);
+            AsyncOperation asyncOperation = UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(sceneName, mode);
 
             if (asyncOperation == null)
+            {
                 return;
+            }
 
             asyncOperation.allowSceneActivation = allowSceneActivation;
 
@@ -87,7 +87,6 @@ namespace Core.SceneManagement
                 if (cancellationToken.IsCancellationRequested)
                 {
                     asyncOperation.allowSceneActivation = false;
-                    _isTransitioning = false;
                     return;
                 }
 
@@ -115,10 +114,12 @@ namespace Core.SceneManagement
 
         public async Task UnloadSceneAsync(string sceneName)
         {
-            var asyncOperation = UnityEngine.SceneManagement.SceneManager.UnloadSceneAsync(sceneName);
+            AsyncOperation asyncOperation = UnityEngine.SceneManagement.SceneManager.UnloadSceneAsync(sceneName);
 
             if (asyncOperation == null)
+            {
                 return;
+            }
 
             while (!asyncOperation.isDone)
             {
@@ -132,6 +133,25 @@ namespace Core.SceneManagement
         {
             string currentSceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
             await LoadSceneWithTransitionAsync(currentSceneName);
+        }
+
+        private bool TryGetLoadingView(out GameObject loadingCanvas, out LoadingView loadingView)
+        {
+            loadingCanvas = null;
+            loadingView = null;
+
+            if (_uiManager == null)
+            {
+                return false;
+            }
+
+            if (!_uiManager.TryGet(UIType.Loading, out loadingCanvas) || loadingCanvas == null)
+            {
+                return false;
+            }
+
+            loadingView = loadingCanvas.GetComponent<LoadingView>();
+            return loadingView != null;
         }
     }
 }

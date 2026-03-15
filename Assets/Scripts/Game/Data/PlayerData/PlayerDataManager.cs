@@ -13,7 +13,6 @@ namespace Game.Data.PlayerData
 
         public int CurrentLevel { get; private set; }
         public bool IsSoundOn { get; private set; }
-        public bool IsLoaded { get; private set; }
 
         public event Action<bool> OnSoundStateChanged;
 
@@ -24,14 +23,10 @@ namespace Game.Data.PlayerData
 
         public void Load()
         {
-            if (IsLoaded)
-            {
-                return;
-            }
-
             CurrentLevel = _saveManager.Load(CurrentLevelKey, 0);
             IsSoundOn = _saveManager.Load(SoundKey, 1) == 1;
-            IsLoaded = true;
+
+            OnSoundStateChanged?.Invoke(IsSoundOn);
         }
 
         public void SetCurrentLevel(int level)

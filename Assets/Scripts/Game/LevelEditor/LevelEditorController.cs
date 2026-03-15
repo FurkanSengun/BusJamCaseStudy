@@ -13,7 +13,7 @@ namespace Game.LevelEditor
         private const float CellSizeConst = 1f;
         private const float GridGapConst = 1.2f;
         private const float QueueSlotSpacingConst = 2.5f;
-        private const float BusSpacingConst = 8f;
+        private const float BusSpacingConst = 10f;
         
         #endregion
 

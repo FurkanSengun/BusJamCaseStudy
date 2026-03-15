@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using Game.Input;
 using UnityEngine;
+using Utils;
 using Zenject;
 
 namespace Game.Timer
@@ -66,7 +67,8 @@ namespace Game.Timer
 
             _isArmed = false;
             IsRunning = true;
-
+            
+            DevLog.Log("Starting timer");
             OnTimerStarted?.Invoke();
             _timerCoroutine = StartCoroutine(TimerRoutine());
         }
@@ -114,6 +116,7 @@ namespace Game.Timer
             _timerCoroutine = null;
             IsRunning = false;
             OnTimeExpired?.Invoke();
+            DevLog.Log("Stopping timer");
         }
 
         private void StopTimerInternal()
