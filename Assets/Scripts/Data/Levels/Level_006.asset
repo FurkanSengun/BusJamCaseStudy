@@ -54,8 +54,8 @@ MonoBehaviour:
     cellType: 2
     passengerColor: 0
   - gridIndex: {x: 0, y: 4}
-    cellType: 0
-    passengerColor: 0
+    cellType: 1
+    passengerColor: 3
   - gridIndex: {x: 1, y: 4}
     cellType: 0
     passengerColor: 0
@@ -86,6 +86,8 @@ MonoBehaviour:
     color: 0
   - gridIndex: {x: 1, y: 3}
     color: 1
+  - gridIndex: {x: 0, y: 4}
+    color: 3
   - gridIndex: {x: 2, y: 4}
     color: 3
   buses:
