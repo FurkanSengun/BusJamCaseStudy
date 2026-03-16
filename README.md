@@ -15,5 +15,5 @@ Zemin Tile modeli ve ToonShader/OutlineShader harici bütün 3D modeller ve SFX'
 DOTween (HOTween v2)
 Extenject Dependency Injection IOC
 
-**Not:** Scriptlerin refactoringi, LevelEditorController'a görsel arayüzü sağlayabilme ve önecden beirlemiş olduğum Arcihtecture üzerinde tavsiyeler almak için yapay zekanın yardımı alınmıştır
+**Not:** Scriptlerin refactoringi, LevelEditorController'a görsel arayüzü sağlayabilme ve önceden belirlemiş olduğum Architecture üzerinde tavsiyeler almak için yapay zekanın yardımı alınmıştır
 
