@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep \"\\\\.cs$\")",
+      "Bash(grep -n \"_ =\" /c/Users/PC/Documents/GitHub/BusJamCaseStudy/Assets/Scripts/Game/States/*.cs)"
+    ]
+  }
+}

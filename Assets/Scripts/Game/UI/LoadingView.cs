@@ -1,5 +1,5 @@
 using System.Threading;
-using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -38,7 +38,7 @@ namespace Game.UI
             slider.value = Mathf.Lerp(slider.minValue, slider.maxValue, clampedValue);
         }
 
-        public async Task FadeToBlackAsync(CancellationToken cancellationToken = default)
+        public async UniTask FadeToBlackAsync(CancellationToken cancellationToken = default)
         {
             if (canvasGroup == null)
             {
@@ -52,26 +52,19 @@ namespace Game.UI
             await FadeAsync(canvasGroup.alpha, 1f, cancellationToken);
         }
 
-        public async Task ShowCompletedAndHideAsync(CancellationToken cancellationToken = default)
+        public async UniTask ShowCompletedAndHideAsync(CancellationToken cancellationToken = default)
         {
             SetProgress(1f);
 
             if (fullBarHoldDuration > 0f)
             {
-                try
-                {
-                    await Task.Delay((int)(fullBarHoldDuration * 1000f), cancellationToken);
-                }
-                catch (TaskCanceledException)
-                {
-                    return;
-                }
+                await UniTask.Delay((int)(fullBarHoldDuration * 1000f), cancellationToken: cancellationToken);
             }
 
             await FadeOutAndHideAsync(cancellationToken);
         }
 
-        public async Task FadeOutAndHideAsync(CancellationToken cancellationToken = default)
+        public async UniTask FadeOutAndHideAsync(CancellationToken cancellationToken = default)
         {
             if (canvasGroup == null)
             {
@@ -85,7 +78,7 @@ namespace Game.UI
             gameObject.SetActive(false);
         }
 
-        private async Task FadeAsync(float from, float to, CancellationToken cancellationToken)
+        private async UniTask FadeAsync(float from, float to, CancellationToken cancellationToken)
         {
             float elapsed = 0f;
             canvasGroup.alpha = from;
@@ -101,7 +94,7 @@ namespace Game.UI
                 float t = Mathf.Clamp01(elapsed / fadeDuration);
                 canvasGroup.alpha = Mathf.Lerp(from, to, t);
 
-                await Task.Yield();
+                await UniTask.Yield(cancellationToken);
             }
 
             canvasGroup.alpha = to;

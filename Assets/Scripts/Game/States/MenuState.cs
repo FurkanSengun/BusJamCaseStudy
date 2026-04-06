@@ -1,4 +1,4 @@
-using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using Core.SceneManagement;
 using Core.UI;
 using Game.GameManager;
@@ -33,10 +33,10 @@ namespace Game.States
             _sceneManager.OnSceneLoaded -= HandleSceneLoaded;
             _sceneManager.OnSceneLoaded += HandleSceneLoaded;
 
-            _ = EnterAsync();
+            EnterAsync().Forget();
         }
 
-        private async Task EnterAsync()
+        private async UniTaskVoid EnterAsync()
         {
             _uiManager.HideAllSceneUI();
             await _sceneManager.LoadSceneWithTransitionAsync(SceneNames.MenuScene, useLoadingScreen: true);

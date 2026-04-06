@@ -1,6 +1,6 @@
 using System;
 using System.Threading;
-using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using UnityEngine.SceneManagement;
 
 namespace Core.SceneManagement
@@ -9,11 +9,11 @@ namespace Core.SceneManagement
     {
         event Action<string> OnSceneLoaded;
 
-        Task<bool> LoadSceneWithTransitionAsync(
+        UniTask<bool> LoadSceneWithTransitionAsync(
             string sceneName,
             LoadSceneMode mode = LoadSceneMode.Single,
             CancellationToken cancellationToken = default,
             bool useLoadingScreen = true);
-        
+
     }
 }

@@ -1,4 +1,4 @@
-using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using Core.SceneManagement;
 using Core.Sound;
 using Core.UI;
@@ -36,14 +36,14 @@ namespace Game.States
         public override void Enter()
         {
             Time.timeScale = 1;
-            
+
             _sceneManager.OnSceneLoaded -= HandleSceneLoaded;
             _sceneManager.OnSceneLoaded += HandleSceneLoaded;
 
-            _ = EnterAsync();
+            EnterAsync().Forget();
         }
 
-        private async Task EnterAsync()
+        private async UniTaskVoid EnterAsync()
         {
             _uiManager.HideAllSceneUI();
             _uiManager.Show(UIType.Loading, true);
@@ -71,12 +71,12 @@ namespace Game.States
             }
 
             _sceneManager.OnSceneLoaded -= HandleSceneLoaded;
-            _ = InitializeGameplaySceneAsync();
+            InitializeGameplaySceneAsync().Forget();
         }
 
-        private async Task InitializeGameplaySceneAsync()
+        private async UniTaskVoid InitializeGameplaySceneAsync()
         {
-            await Task.Yield();
+            await UniTask.Yield();
 
             ResolveSceneDependencies();
             SubscribeGameplayEvents();
@@ -120,14 +120,14 @@ namespace Game.States
                 _winConditionTracker.OnLevelCompleted -= HandleLevelCompleted;
                 _winConditionTracker.OnLevelCompleted += HandleLevelCompleted;
             }
-            
+
             if (_busManager != null)
             {
                 _busManager.OnQueueFull -= HandleQueueFull;
                 _busManager.OnQueueFull += HandleQueueFull;
             }
-            
-            
+
+
         }
 
         private void UnsubscribeGameplayEvents()
@@ -146,7 +146,7 @@ namespace Game.States
             {
                 _winConditionTracker.OnLevelCompleted -= HandleLevelCompleted;
             }
-            
+
             if (_busManager != null)
             {
                 _busManager.OnQueueFull -= HandleQueueFull;
@@ -184,7 +184,7 @@ namespace Game.States
             }
             _gameManager.CompleteCurrentLevel();
         }
-        
+
         private void HandleQueueFull()
         {
             if (_winConditionTracker != null && _winConditionTracker.IsLevelCompleted)

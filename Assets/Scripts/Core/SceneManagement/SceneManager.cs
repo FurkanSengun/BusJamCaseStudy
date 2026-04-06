@@ -1,6 +1,6 @@
 using System;
 using System.Threading;
-using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using Core.UI;
 using Game.UI;
 using UnityEngine;
@@ -19,7 +19,7 @@ namespace Core.SceneManagement
 
         private bool _isTransitioning;
 
-        public async Task<bool> LoadSceneWithTransitionAsync( string sceneName, LoadSceneMode mode = LoadSceneMode.Single, CancellationToken cancellationToken = default, bool useLoadingScreen = true)
+        public async UniTask<bool> LoadSceneWithTransitionAsync( string sceneName, LoadSceneMode mode = LoadSceneMode.Single, CancellationToken cancellationToken = default, bool useLoadingScreen = true)
         {
             if (_isTransitioning)
             {
@@ -65,7 +65,7 @@ namespace Core.SceneManagement
             }
         }
 
-        public async Task LoadSceneAsync(
+        public async UniTask LoadSceneAsync(
             string sceneName,
             LoadSceneMode mode = LoadSceneMode.Single,
             IProgress<float> progress = null,
@@ -101,12 +101,12 @@ namespace Core.SceneManagement
                     break;
                 }
 
-                await Task.Yield();
+                await UniTask.Yield(cancellationToken);
             }
 
             if (allowSceneActivation || asyncOperation.isDone)
             {
-                await Task.Yield();
+                await UniTask.Yield(cancellationToken);
                 OnSceneLoaded?.Invoke(sceneName);
             }
         }
